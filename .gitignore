@@ -1,0 +1,17 @@
+.env
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+dbt/.user.yml
+data/raw/*/
+data/landing/*
+data/cleaned/*
+!data/raw/.gitkeep
+!data/landing/.gitkeep
+!data/cleaned/.gitkeep
+!data/reference/
+.DS_Store

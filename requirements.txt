@@ -1,0 +1,6 @@
+-r requirements-core.txt
+
+# Reporting dashboard
+streamlit>=1.28.0
+plotly>=5.18.0
+matplotlib>=3.8.0
