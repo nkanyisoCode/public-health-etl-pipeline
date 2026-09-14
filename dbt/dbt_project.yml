@@ -1,0 +1,25 @@
+name: 'public_health_warehouse'
+version: '1.0.0'
+config-version: 2
+
+profile: 'public_health_warehouse'
+
+model-paths: ["models"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  public_health_warehouse:
+    marts:
+      +schema: warehouse
+      dimensions:
+        +materialized: table
+      facts:
+        +materialized: table
+    reporting:
+      +schema: reporting
+      +materialized: view
