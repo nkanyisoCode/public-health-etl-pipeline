@@ -2,7 +2,7 @@
 
 with years as (
     select distinct year
-    from {{ ref('stg_health_indicators') }}
+    from {{ source('staging', 'stg_health_indicators') }}
     where year is not null
 )
 

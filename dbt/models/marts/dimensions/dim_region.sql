@@ -10,4 +10,4 @@ select
         when region_type = 'aggregate' then 'Regional aggregate'
         else 'Other'
     end as region_type_label
-from {{ ref('stg_regions') }}
+from {{ source('staging', 'stg_regions') }}
