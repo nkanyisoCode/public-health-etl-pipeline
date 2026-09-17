@@ -1,0 +1,28 @@
+version: 2
+
+sources:
+  - name: staging
+    schema: staging
+    description: "Raw staging tables loaded by the pandas ETL pipeline."
+    tables:
+      - name: stg_health_indicators
+        description: "Long-format vaccination indicator rows, one row per region/year/indicator."
+        columns:
+          - name: region_key
+            tests: [not_null]
+          - name: year
+            tests: [not_null]
+          - name: indicator_code
+            tests: [not_null]
+
+      - name: stg_regions
+        description: "One row per unique region extracted from the indicators data."
+        columns:
+          - name: region_key
+            tests: [unique, not_null]
+
+      - name: stg_rejected_rows
+        description: "Rows quarantined during pandas validation with rejection reasons."
+
+      - name: stg_data_revisions
+        description: "Value changes detected between the current and prior raw snapshot."
