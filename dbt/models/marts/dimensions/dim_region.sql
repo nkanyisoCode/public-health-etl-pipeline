@@ -1,17 +1,13 @@
 {{ config(materialized='table') }}
 
-with years as (
-    select distinct year
-    from {{ ref('stg_health_indicators') }}
-    where year is not null
-)
-
 select
-    (year * 10000 + 101)::int as date_id,
-    make_date(year, 1, 1) as date_day,
-    1 as day,
-    1 as month,
-    year,
-    1 as quarter,
-    'Yearly'::text as reporting_frequency
-from years
+    region_key,
+    region_name,
+    iso_code,
+    region_type,
+    case
+        when region_type = 'country' then 'Country'
+        when region_type = 'aggregate' then 'Regional aggregate'
+        else 'Other'
+    end as region_type_label
+from {{ ref('stg_regions') }}
