@@ -3,8 +3,7 @@
 from __future__ import annotations
 
 import json
-from datetime import date, datetime, timezone
-UTC = timezone.utc
+from datetime import datetime, timezone
 from pathlib import Path
 
 import pandas as pd
@@ -20,6 +19,7 @@ from etl.config import (
 from etl.logger import get_logger
 
 log = get_logger(__name__)
+UTC = timezone.utc
 
 VALUE_MIN = 0.0
 VALUE_MAX = 100.0
