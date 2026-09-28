@@ -2,13 +2,14 @@
 
 import json
 from datetime import datetime, timezone
-UTC = timezone.utc
 
 import pandas as pd
 from sqlalchemy import text
 
 from etl.config import CLEANED_DIR, get_engine
 from etl.logger import get_logger
+
+UTC = timezone.utc
 
 log = get_logger(__name__)
 
