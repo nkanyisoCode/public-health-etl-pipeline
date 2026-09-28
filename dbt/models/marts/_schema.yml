@@ -1,0 +1,54 @@
+version: 2
+
+models:
+  - name: dim_region
+    columns:
+      - name: region_key
+        tests: [unique, not_null]
+
+  - name: dim_date
+    columns:
+      - name: date_id
+        tests: [unique, not_null]
+      - name: year
+        tests: [not_null]
+
+  - name: dim_indicator
+    columns:
+      - name: indicator_code
+        tests: [unique, not_null]
+
+  - name: fact_health_indicator
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [region_id, date_id, indicator_id]
+    columns:
+      - name: region_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_region')
+                field: region_key
+      - name: date_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_id
+      - name: indicator_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_indicator')
+                field: indicator_code
+      - name: value
+        tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                max_value: 100
+                inclusive: true

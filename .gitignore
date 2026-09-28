@@ -15,3 +15,4 @@ data/cleaned/*
 !data/cleaned/.gitkeep
 !data/reference/
 .DS_Store
+logs/
