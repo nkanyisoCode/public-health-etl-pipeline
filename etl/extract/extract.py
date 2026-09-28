@@ -70,7 +70,7 @@ def extract(for_date: date | None = None, use_cache: bool = False) -> dict[str, 
         else:
             log.info("Downloading %s from OWID...", key)
             row_count = _download(meta["url"], dest)
-            shutil.copy2(dest, landing)
+            shutil.copyfile(dest, landing)
             counts[key] = row_count
             log.info("Downloaded %s: %d rows", key, row_count)
             continue

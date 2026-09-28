@@ -26,6 +26,8 @@ services:
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://ph_user:ph_pass@postgres:5432/airflow
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
       _AIRFLOW_DB_MIGRATE: "true"
       _AIRFLOW_WWW_USER_CREATE: "true"
@@ -51,6 +53,8 @@ services:
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://ph_user:ph_pass@postgres:5432/airflow
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
     ports:
       - "8081:8080"
@@ -75,6 +79,9 @@ services:
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://ph_user:ph_pass@postgres:5432/airflow
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      _PIP_ADDITIONAL_REQUIREMENTS: "dbt-core==1.12.4 dbt-postgres==1.11.0"
       AIRFLOW__CORE__LOAD_EXAMPLES: "false"
     volumes:
       - ./airflow/dags:/opt/airflow/dags
