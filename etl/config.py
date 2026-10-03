@@ -16,7 +16,8 @@ CLEANED_DIR = PROJECT_ROOT / "data" / "cleaned"
 REFERENCE_DIR = PROJECT_ROOT / "data" / "reference"
 
 # OWID datasets — WHO/UNICEF childhood vaccination coverage
-# DTP3 is extracted from the wide vaccination_coverage file via INDICATOR_COLUMNS; no separate download needed.
+# DTP3 is extracted from the wide vaccination_coverage file via INDICATOR_COLUMNS;
+# no separate download needed.
 OWID_DATASETS = {
     "vaccination_coverage": {
         "url": (
@@ -30,7 +31,9 @@ OWID_DATASETS = {
 
 # Indicators extracted from the wide vaccination coverage file
 INDICATOR_COLUMNS = {
-    "Measles, first dose (MCV1)": ("measles_mcv1", "Measles (MCV1)", "vaccination", "%"),
+    "Measles, first dose (MCV1)": (
+        "measles_mcv1", "Measles (MCV1)", "vaccination", "%"
+    ),
     "Diphtheria/tetanus/pertussis (DTP3)": ("dtp3", "DTP3", "vaccination", "%"),
     "Polio (Pol3)": ("polio_pol3", "Polio (Pol3)", "vaccination", "%"),
     "Hepatitis B (HepB3)": ("hepb3", "Hepatitis B (HepB3)", "vaccination", "%"),

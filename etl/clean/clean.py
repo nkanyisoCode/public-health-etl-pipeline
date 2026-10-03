@@ -47,7 +47,9 @@ def _region_type(iso_code: str | None) -> str:
 
 def _read_wide_vaccination(path: Path) -> pd.DataFrame:
     df = pd.read_csv(path)
-    df = df.rename(columns={"Entity": "region_name", "Code": "iso_code", "Year": "year"})
+    df = df.rename(
+        columns={"Entity": "region_name", "Code": "iso_code", "Year": "year"}
+    )
     df["year"] = pd.to_numeric(df["year"], errors="coerce").astype("Int64")
 
     value_cols = [c for c in df.columns if c in INDICATOR_COLUMNS]
@@ -83,14 +85,18 @@ def _apply_indicator_metadata(df: pd.DataFrame) -> pd.DataFrame:
 def _standardise_regions(df: pd.DataFrame, aliases: dict[str, str]) -> pd.DataFrame:
     df = df.copy()
     df["region_name"] = df["region_name"].str.strip()
-    df["iso_code"] = df["iso_code"].astype(str).str.strip().replace({"nan": None, "None": None})
+    df["iso_code"] = (
+        df["iso_code"].astype(str).str.strip().replace({"nan": None, "None": None})
+    )
 
     # Fill missing ISO from alias table (handles name drift edge cases)
     missing_code = df["iso_code"].isna() | (df["iso_code"] == "")
     df.loc[missing_code, "iso_code"] = df.loc[missing_code, "region_name"].map(aliases)
 
     df["region_type"] = df["iso_code"].apply(_region_type)
-    df["region_key"] = df["iso_code"].fillna(df["region_name"].str.lower().str.replace(" ", "_"))
+    df["region_key"] = df["iso_code"].fillna(
+        df["region_name"].str.lower().str.replace(" ", "_")
+    )
     return df
 
 
@@ -101,11 +107,17 @@ def _validate_rows(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
 
     for idx, row in df.iterrows():
         reasons = []
-        if pd.isna(row["year"]) or row["year"] < 1980 or row["year"] > datetime.now().year + 1:
+        if (
+            pd.isna(row["year"])
+            or row["year"] < 1980
+            or row["year"] > datetime.now().year + 1
+        ):
             reasons.append("invalid_year")
         if pd.isna(row["region_name"]) or not str(row["region_name"]).strip():
             reasons.append("missing_region")
-        if pd.notna(row["value"]) and (row["value"] < VALUE_MIN or row["value"] > VALUE_MAX):
+        if pd.notna(row["value"]) and (
+            row["value"] < VALUE_MIN or row["value"] > VALUE_MAX
+        ):
             reasons.append("value_out_of_range")
 
         if reasons:
@@ -128,7 +140,9 @@ def _validate_rows(df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
     return clean, reject_df
 
 
-def _detect_revisions(current: pd.DataFrame, prior_snapshot_dir: Path | None) -> pd.DataFrame:
+def _detect_revisions(
+    current: pd.DataFrame, prior_snapshot_dir: Path | None
+) -> pd.DataFrame:
     """Compare current landing file against prior raw snapshot."""
     if prior_snapshot_dir is None:
         return pd.DataFrame(

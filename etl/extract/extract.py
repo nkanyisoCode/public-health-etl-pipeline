@@ -77,7 +77,8 @@ def extract(for_date: date | None = None, use_cache: bool = False) -> dict[str, 
 
         counts[key] = sum(1 for _ in open(dest)) - 1
 
-    prior = _latest_prior_snapshot(snap.name and date.fromisoformat(snap.name) or date.today())
+    prior_date = date.fromisoformat(snap.name) if snap.name else date.today()
+    prior = _latest_prior_snapshot(prior_date)
     if prior:
         log.info("Prior snapshot available for revision detection: %s", prior.name)
 
