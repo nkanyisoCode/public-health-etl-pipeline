@@ -90,8 +90,12 @@ def _standardise_regions(df: pd.DataFrame, aliases: dict[str, str]) -> pd.DataFr
     )
 
     # Fill missing ISO from alias table (handles name drift edge cases)
+    # Use list comprehension instead of .map() so unmatched entries are None
+    # (not float NaN), which is required by Arrow-backed string columns in pandas 3+.
     missing_code = df["iso_code"].isna() | (df["iso_code"] == "")
-    df.loc[missing_code, "iso_code"] = df.loc[missing_code, "region_name"].map(aliases)
+    df.loc[missing_code, "iso_code"] = [
+        aliases.get(name) for name in df.loc[missing_code, "region_name"]
+    ]
 
     df["region_type"] = df["iso_code"].apply(_region_type)
     df["region_key"] = df["iso_code"].fillna(
