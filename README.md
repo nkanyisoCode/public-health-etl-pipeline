@@ -156,11 +156,11 @@ Expected output:
   "rejected_rows": 0,
   "revisions_detected": 0,
   "latest_dtp3_year": 2024,
-  "countries_below_80pct_dtp3": 53
+  "countries_below_80pct_dtp3": 47
 }
 ```
 
-> Note: the reporting view `rpt_below_threshold` shows **47 countries** (non-null latest-year DTP3 in the warehouse).
+> This count uses the same rule as `reporting.rpt_below_threshold`: countries only, in the latest year with a non-null DTP3 value. Coverage equal to 80% is not below the target.
 
 Files saved to `data/cleaned/`.
 

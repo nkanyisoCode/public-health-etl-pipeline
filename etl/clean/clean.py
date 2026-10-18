@@ -191,6 +191,27 @@ def _detect_revisions(
     )
 
 
+def count_countries_below_threshold(
+    df: pd.DataFrame, threshold: float = WHO_THRESHOLD_PCT
+) -> tuple[int | None, int]:
+    """Count countries under the DTP3 threshold in the latest reported year.
+
+    Same rule as reporting.rpt_below_threshold: the latest year is the maximum
+    year with a non-null DTP3 value (any region), and only region_type
+    'country' is counted. A value equal to the threshold is not below it.
+    """
+    dtp3 = df[df["indicator_code"] == "dtp3"].dropna(subset=["value"])
+    if dtp3.empty:
+        return None, 0
+
+    latest_year = int(dtp3["year"].max())
+    latest_countries = dtp3[
+        (dtp3["year"] == latest_year) & (dtp3["region_type"] == "country")
+    ]
+    below = int((latest_countries["value"] < threshold).sum())
+    return latest_year, below
+
+
 def _find_prior_snapshot() -> Path | None:
     if not RAW_DATA_DIR.exists():
         return None
@@ -288,12 +309,7 @@ def clean() -> dict:
     revision_export.to_csv(out_revisions, index=False)
 
     countries = regions[regions["region_type"] == "country"]
-    dtp3 = clean_df[clean_df["indicator_code"] == "dtp3"].dropna(subset=["value"])
-    latest_year = int(dtp3["year"].max()) if not dtp3.empty else None
-    below_threshold = 0
-    if latest_year:
-        latest = dtp3[dtp3["year"] == latest_year]
-        below_threshold = int((latest["value"] < WHO_THRESHOLD_PCT).sum())
+    latest_year, below_threshold = count_countries_below_threshold(clean_df)
 
     stats = {
         "indicator_rows": len(clean_df),

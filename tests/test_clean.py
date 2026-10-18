@@ -8,6 +8,7 @@ from etl.clean.clean import (
     _region_type,
     _standardise_regions,
     _validate_rows,
+    count_countries_below_threshold,
 )
 from etl.config import INDICATOR_COLUMNS
 
@@ -196,3 +197,102 @@ class TestApplyIndicatorMetadata:
     def test_unknown_indicator_is_dropped(self):
         result = _apply_indicator_metadata(self._df_for("No Such Indicator XYZ"))
         assert len(result) == 0
+
+
+# ---------------------------------------------------------------------------
+# count_countries_below_threshold
+# ---------------------------------------------------------------------------
+
+
+class TestCountCountriesBelowThreshold:
+    def _rows(self):
+        return pd.DataFrame(
+            [
+                {
+                    "indicator_code": "dtp3",
+                    "year": 2024,
+                    "value": 70.0,
+                    "region_type": "country",
+                },
+                {
+                    "indicator_code": "dtp3",
+                    "year": 2024,
+                    "value": 80.0,
+                    "region_type": "country",
+                },
+                {
+                    "indicator_code": "dtp3",
+                    "year": 2024,
+                    "value": 90.0,
+                    "region_type": "country",
+                },
+                {
+                    "indicator_code": "dtp3",
+                    "year": 2024,
+                    "value": 40.0,
+                    "region_type": "aggregate",
+                },
+                {
+                    "indicator_code": "dtp3",
+                    "year": 2023,
+                    "value": 10.0,
+                    "region_type": "country",
+                },
+                {
+                    "indicator_code": "dtp3",
+                    "year": 2024,
+                    "value": None,
+                    "region_type": "country",
+                },
+                {
+                    "indicator_code": "measles_mcv1",
+                    "year": 2024,
+                    "value": 20.0,
+                    "region_type": "country",
+                },
+            ]
+        )
+
+    def test_counts_countries_in_latest_year_only(self):
+        latest_year, below = count_countries_below_threshold(self._rows())
+        assert latest_year == 2024
+        assert below == 1
+
+    def test_threshold_value_is_not_below(self):
+        df = pd.DataFrame(
+            [
+                {
+                    "indicator_code": "dtp3",
+                    "year": 2024,
+                    "value": 80.0,
+                    "region_type": "country",
+                }
+            ]
+        )
+        _, below = count_countries_below_threshold(df)
+        assert below == 0
+
+    def test_latest_year_can_come_from_an_aggregate(self):
+        df = pd.DataFrame(
+            [
+                {
+                    "indicator_code": "dtp3",
+                    "year": 2025,
+                    "value": 50.0,
+                    "region_type": "aggregate",
+                },
+                {
+                    "indicator_code": "dtp3",
+                    "year": 2024,
+                    "value": 50.0,
+                    "region_type": "country",
+                },
+            ]
+        )
+        latest_year, below = count_countries_below_threshold(df)
+        assert latest_year == 2025
+        assert below == 0
+
+    def test_empty_frame_returns_no_year(self):
+        df = pd.DataFrame(columns=["indicator_code", "year", "value", "region_type"])
+        assert count_countries_below_threshold(df) == (None, 0)
