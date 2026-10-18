@@ -29,3 +29,44 @@ jobs:
 
       - name: Validate docker-compose
         run: docker compose config --quiet
+
+  warehouse:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: ph_user
+          POSTGRES_PASSWORD: ph_pass
+          POSTGRES_DB: public_health_warehouse
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U ph_user -d public_health_warehouse"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: "5432"
+      POSTGRES_DB: public_health_warehouse
+      POSTGRES_USER: ph_user
+      POSTGRES_PASSWORD: ph_pass
+      PYTHONPATH: .
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements-core.txt
+
+      - name: Install pipeline dependencies
+        run: pip install -r requirements-core.txt "dbt-core==1.12.4" "dbt-postgres==1.11.0"
+
+      - name: Install PostgreSQL client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Build warehouse from fixture
+        run: bash scripts/ci_warehouse.sh
