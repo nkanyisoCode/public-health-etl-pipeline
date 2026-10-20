@@ -2,6 +2,8 @@
 
 ![CI](https://github.com/nkanyisoCode/public-health-etl-pipeline/actions/workflows/ci.yml/badge.svg)
 
+**Verification:** WTC-CQ6Z8S7N
+
 Real-world public health data pipeline using **Our World in Data (OWID)** vaccination statistics from WHO & UNICEF.
 
 ## Analytical Question
