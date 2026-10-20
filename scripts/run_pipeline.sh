@@ -41,6 +41,12 @@ echo "=== Step 2: Clean ==="
 echo "=== Step 3: Load to staging ==="
 "$PYTHON" -m etl.load.load
 
+# Airflow (Docker) runs dbt as a different UID; stale root-owned files under dbt/ break deps/test locally.
+if find "${PROJECT_DIR}/dbt" ! -user "$(id -u)" -print -quit 2>/dev/null | grep -q .; then
+    echo "Fixing dbt/ ownership (files created by Airflow in Docker)..."
+    docker run --rm -v "${PROJECT_DIR}/dbt:/dbt" alpine chown -R "$(id -u):$(id -g)" /dbt
+fi
+
 echo "=== Step 4: dbt run ==="
 cd dbt
 "${PROJECT_DIR}/.venv/bin/dbt" deps --profiles-dir .
